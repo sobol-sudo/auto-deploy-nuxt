@@ -1,5 +1,5 @@
 <template>
   <div>
-    роут second
+    route second
   </div>
 </template>
