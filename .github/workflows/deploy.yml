@@ -35,7 +35,7 @@ jobs:
       env:
         SSH_PRIVATE_KEY: ${{ secrets.SECRET_AUTO_DEPLOY }}
 
-    - name: Restart the server (optional, depending on вашей конфигурации)
+    - name: Restart the server (optional, depending on your configuration)
       run: |
         ssh root@45.142.36.179 "cd /auto-deploy-nuxt && pm2 restart app || npm run dev"
       env:
