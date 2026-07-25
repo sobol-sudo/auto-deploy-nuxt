@@ -11,32 +11,30 @@ jobs:
 
     steps:
       - name: Checkout code
-      uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Setup Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Install dependencies
-      run: npm install
+        run: npm ci
 
       - name: Build the project
-      run: npm run build
+        run: npm run build
 
       - name: Setup SSH
-        uses: webfactory/ssh-agent@v0.5.3
+        uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SECRET_AUTO_DEPLOY }}
 
       - name: Copy files to the server
-      run: |
-        scp -r ./* root@:45.142.36.179:/auto-deploy-nuxt
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SECRET_AUTO_DEPLOY }}
+        run: |
+          scp -o StrictHostKeyChecking=no -r ./.output/* \
+            root@${{ vars.DEPLOY_HOST }}:/auto-deploy-nuxt
 
-    - name: Restart the server (optional, depending on your configuration)
-      run: |
-        ssh root@45.142.36.179 "cd /auto-deploy-nuxt && pm2 restart app || npm run dev"
-      env:
-        SSH_PRIVATE_KEY: ${{ secrets.SECRET_AUTO_DEPLOY }}
+      - name: Restart the server
+        run: |
+          ssh -o StrictHostKeyChecking=no root@${{ vars.DEPLOY_HOST }} \
+            "cd /auto-deploy-nuxt && pm2 restart app"
